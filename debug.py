@@ -1,4 +1,5 @@
 import os
+from utils import get_backbone_from_model
 from torchvision import transforms
 from torchvision.transforms.transforms import Resize
 from base_backbone import BaseBackbone
@@ -19,7 +20,7 @@ transf = transforms.Compose([
     normalize,
 ])
 
-backbone = BaseBackbone(3)
+backbone = get_backbone_from_model(torchvision.models.resnet18(pretrained=True), n=2)
 net = AutoEncoder(
     in_channels=3,
     latent_dim=None,
