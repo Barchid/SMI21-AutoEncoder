@@ -57,9 +57,9 @@ for epoch in range(200):
 
     print('Loss: {}'.format(running_loss))
 
-inp = plt.imshow(inputs[0].cpu().permute(1, 2, 0).numpy())
+inp = plt.imshow(inputs[0].cpu().permute(1, 2, 0).clamp(0, 1).numpy())
 plt.savefig('input.png')
 
-inp = plt.imshow(outputs[0].cpu().permute(1, 2, 0).numpy())
+inp = plt.imshow(outputs[0].detach().cpu().permute(1, 2, 0).numpy())
 plt.savefig('input.png')
 print('Finished Training')
