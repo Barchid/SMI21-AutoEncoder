@@ -25,6 +25,7 @@ net = AutoEncoder(
     backbone=backbone,
     backbone_out=512
 )
+net.to(device)
 traindataset = torchvision.datasets.CIFAR100(
     'datasets/cifar', download=not os.path.exists('datasets/cifar'), transform=transf)
 trainloader = torch.utils.data.DataLoader(
