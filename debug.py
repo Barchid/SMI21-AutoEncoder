@@ -1,3 +1,4 @@
+import os
 from torchvision import transforms
 from base_backbone import BaseBackbone
 from auto_encoder import AutoEncoder
@@ -23,7 +24,7 @@ net = AutoEncoder(
     backbone_out=512
 )
 traindataset = torchvision.datasets.VOCSegmentation(
-    'datasets/voc', '2007', 'train', download=True, transform=transf)
+    'datasets/voc', '2007', 'train', download=os.path.exists('datasets/voc'), transform=transf)
 trainloader = torch.utils.data.DataLoader(
     traindataset, batch_size=8, shuffle=False)
 optimizer = optimizer = torch.optim.Adam(net.parameters(), lr=1e-2)
