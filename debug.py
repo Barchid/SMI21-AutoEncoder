@@ -2,7 +2,7 @@ import os
 from utils import get_backbone_from_model
 from torchvision import transforms
 from torchvision.transforms.transforms import Resize
-from base_backbone import BaseBackbone
+from base_backbone import BaseBackbone, VOneNetBackbone
 from auto_encoder import AutoEncoder
 import torch
 import torch.nn as nn
@@ -20,12 +20,15 @@ transf = transforms.Compose([
     normalize,
 ])
 
-backbone = get_backbone_from_model(torchvision.models.resnet18(pretrained=True), n=2)
+# backbone = get_backbone_from_model(torchvision.models.resnet18(pretrained=True), n=2)
+backbone = VOneNetBackbone(
+    model_arch='alexnet'
+)
 net = AutoEncoder(
     in_channels=3,
     latent_dim=None,
     backbone=backbone,
-    backbone_out=512
+    backbone_out=256
 )
 net.to(device)
 traindataset = torchvision.datasets.CIFAR100(
