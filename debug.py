@@ -9,6 +9,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torchvision
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+import matplotlib.pyplot as plt
 
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
@@ -35,7 +36,8 @@ criterion = nn.MSELoss()
 
 
 # loop over the dataset multiple times
-for epoch in range(1000):
+outputs = inputs = None
+for epoch in range(200):
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
         inputs, _ = data
@@ -55,4 +57,9 @@ for epoch in range(1000):
 
     print('Loss: {}'.format(running_loss))
 
+inp = plt.imshow(inputs[0].numpy())
+plt.savefig('input.png')
+
+inp = plt.imshow(outputs[0].numpy())
+plt.savefig('input.png')
 print('Finished Training')
