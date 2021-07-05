@@ -22,11 +22,10 @@ class ConvBNAct(nn.Sequential):
         """
         super(ConvBNAct, self).__init__()
         padding = kernel_size // 2 + dilation - 1
-
         if is_transposed:
             self.add_module('conv', nn.ConvTranspose2d(channels_in, channels_out,
                                                        kernel_size=kernel_size,
-                                                       padding=padding,
+                                                       padding=0, # No padding
                                                        bias=not use_bn,  # No bias if Batch Normalization is used
                                                        dilation=dilation,
                                                        stride=stride))
