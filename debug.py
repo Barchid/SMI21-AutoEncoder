@@ -1,5 +1,6 @@
 import os
 from torchvision import transforms
+from torchvision.transforms.transforms import Resize
 from base_backbone import BaseBackbone
 from auto_encoder import AutoEncoder
 import torch
@@ -12,6 +13,7 @@ device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406],
                                  std=[0.229, 0.224, 0.225])
 transf = transforms.Compose([
+    transforms.Resize((224, 224)),
     transforms.ToTensor(),
     normalize,
 ])
