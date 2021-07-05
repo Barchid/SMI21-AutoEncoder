@@ -26,7 +26,7 @@ net = AutoEncoder(
     backbone_out=512
 )
 traindataset = torchvision.datasets.CIFAR100(
-    'datasets/caltech', download=not os.path.exists('datasets/caltech'), transform=transf)
+    'datasets/cifar', download=not os.path.exists('datasets/cifar'), transform=transf)
 trainloader = torch.utils.data.DataLoader(
     traindataset, batch_size=8, shuffle=False)
 optimizer = optimizer = torch.optim.Adam(net.parameters(), lr=1e-2)
