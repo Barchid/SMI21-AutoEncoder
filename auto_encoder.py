@@ -140,15 +140,15 @@ class Decoder(nn.Module):
         else:
             # TRANSPOSE CONVOLUTION STRATEGY
             blocks[0] = ConvBNAct(
-                channels_in=in_channels, channels_out=channels[0], kernel_size=3, is_transposed=True, stride=2)
+                channels_in=in_channels, channels_out=channels[0], kernel_size=2, is_transposed=True, stride=2)
             blocks[1] = ConvBNAct(
-                channels_in=channels[0], channels_out=channels[1], kernel_size=3, is_transposed=True, stride=2)
+                channels_in=channels[0], channels_out=channels[1], kernel_size=2, is_transposed=True, stride=2)
             blocks[2] = ConvBNAct(
-                channels_in=channels[1], channels_out=channels[2], kernel_size=3, is_transposed=True, stride=2)
+                channels_in=channels[1], channels_out=channels[2], kernel_size=2, is_transposed=True, stride=2)
             blocks[3] = ConvBNAct(
-                channels_in=channels[2], channels_out=channels[3], kernel_size=3, is_transposed=True, stride=2)
+                channels_in=channels[2], channels_out=channels[3], kernel_size=2, is_transposed=True, stride=2)
             blocks[4] = ConvBNAct(
-                channels_in=channels[3], channels_out=channels[4], kernel_size=3, is_transposed=True, stride=2)
+                channels_in=channels[3], channels_out=channels[4], kernel_size=2, is_transposed=True, stride=2)
 
         self.decoder = nn.Sequential(*blocks)
 
