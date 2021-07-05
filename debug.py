@@ -57,7 +57,7 @@ for epoch in range(200):
 
     print('Loss: {}'.format(running_loss))
 
-for i in range(inputs):
+for i in range(inputs.shape[0]):
     plt.imshow(inputs[i].cpu().permute(1, 2, 0).clamp(0, 1).numpy())
     plt.savefig(f'input_{i}.png')
 
