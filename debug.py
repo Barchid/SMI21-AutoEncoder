@@ -24,7 +24,7 @@ net = AutoEncoder(
 )
 traindataset = torchvision.datasets.VOCSegmentation(
     'datasets/voc', '2007', 'train', download=True, transform=transf)
-trainloader = dataloader = torch.utils.DataLoader(
+trainloader = torch.utils.data.DataLoader(
     traindataset, batch_size=8, suffle=False)
 optimizer = optimizer = torch.optim.Adam(net.parameters(), lr=1e-2)
 criterion = nn.MSELoss()
