@@ -33,7 +33,7 @@ def main():
         model,  # model being run
         dummy_input,  # model input (or a tuple for multiple inputs)
         # where to save the model (can be a file or file-like object)
-        "tmp.onnx",
+        "visual_extractor.onnx",
         export_params=True,        # store the trained parameter weights inside the model file
         input_names=['input'],   # the model's input names
         output_names=['output'],  # the model's output names
