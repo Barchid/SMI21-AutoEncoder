@@ -2,7 +2,7 @@ import argparse
 import os
 import torch
 
-device = torch.device('cpu')
+device = torch.device('cuda')
 
 def main():
     parser = argparse.ArgumentParser(
