@@ -112,3 +112,4 @@ datasets/
 __MACOSX/
 
 trying_debug.py
+tmp.onnx
