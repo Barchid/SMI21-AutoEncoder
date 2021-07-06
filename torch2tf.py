@@ -43,7 +43,7 @@ def main():
         })
 
     # from ONNX to Tensorflow file
-    os.system(f"onnx-tf convert -i tmp.onnx -o f{args.output}")
+    os.system(f"onnx-tf convert -i tmp.onnx -o {args.output}")
 
 
 if __name__ == '__main__':
