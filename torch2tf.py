@@ -11,9 +11,9 @@ def main():
         '--output', '-o', help='filename of the resulting  tensorflow .h5 exported file')
     parser.add_argument('--batch_size', '-b', type=int,
                         default=1, help='batch size of the exported model')
-    parser.add_argument('--height', '-h', type=int, default=224,
+    parser.add_argument('--height', type=int, default=224,
                         help='Height dimension of the input image')
-    parser.add_argument('--width', '-w', type=int, default=224,
+    parser.add_argument('--width', type=int, default=224,
                         help='Width dimension of the input image')
     parser.add_argument('--channels', '-c', type=int, default=3,
                         help='Channels dimension of the input image. Defaults to 3 (for color images).')
