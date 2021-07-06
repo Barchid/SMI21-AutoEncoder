@@ -2,6 +2,7 @@ import argparse
 import os
 import torch
 
+device = torch.device('cpu')
 
 def main():
     parser = argparse.ArgumentParser(
@@ -21,12 +22,12 @@ def main():
     args = parser.parse_args()
 
     # Load torch model
-    model = torch.load(args.file)
+    model = torch.load(args.file).to(device)
 
     # convert into ONNX file
     dummy_input = torch.randn(
-        args.batch_size, args.channels, args.height, args.width, requires_grad=True)
-    torch_out = model(dummy_input)
+        args.batch_size, args.channels, args.height, args.width, requires_grad=True).to(device)
+    torch_out = model(dummy_input).to(device)
     # Export the model
     torch.onnx.export(
         model,  # model being run
