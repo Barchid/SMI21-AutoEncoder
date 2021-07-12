@@ -1,4 +1,8 @@
 import argparse
+from genericpath import exists
+import vonenet
+from base_backbone import BaseBackbone, VOneNetBackbone
+from auto_encoder import AutoEncoder
 import os
 import random
 import shutil
@@ -16,20 +20,16 @@ import torch.utils.data
 import torch.utils.data.distributed
 import torchvision.transforms as transforms
 import torchvision.datasets as datasets
-import torchvision.models as models
-
-model_names = sorted(name for name in models.__dict__
-                     if name.islower() and not name.startswith("__")
-                     and callable(models.__dict__[name]))
+from torchsummary import summary
+from torch.utils.tensorboard import SummaryWriter
 
 parser = argparse.ArgumentParser(description='PyTorch AutoEncoder Training')
-parser.add_argument('data', metavar='DIR',
+
+parser.add_argument('--experiment', required=True, help='Experiment\'s name')
+parser.add_argument('--data',
                     help='path to dataset')
-parser.add_argument('-a', '--arch', metavar='ARCH', default='resnet18',
-                    choices=model_names,
-                    help='model architecture: ' +
-                    ' | '.join(model_names) +
-                    ' (default: resnet18)')
+parser.add_argument('-a', '--arch', default='baseline',
+                    help='Architecture of the AE. Can be "baseline", "alexnet", "resnet50" or "cornets". If the value is not "baseline", then the model will be a VOneNet.')
 parser.add_argument('-j', '--workers', default=0, type=int, metavar='N',
                     help='number of data loading workers (default: 0)')
 parser.add_argument('--epochs', default=100, type=int, metavar='N',
@@ -73,8 +73,18 @@ parser.add_argument('--multiprocessing-distributed', action='store_true',
                          'N processes per node, which has N GPUs. This is the '
                          'fastest way to use PyTorch for either single node or '
                          'multi node data parallel training')
+parser.add_argument('--summary', dest='summary', action='store_true',
+                    help='Prints a summary of the model and exit the program.')
 
 best_mse = 0.0
+
+# output channels for the backbones that can be chosen in the arguments
+backbone_outs = {
+    'baseline': 512,
+    'alexnet': 256,
+    'resnet50': 2048,
+    'cornets': 256
+}
 
 
 def main():
@@ -130,12 +140,16 @@ def main_worker(gpu, ngpus_per_node, args):
         dist.init_process_group(backend=args.dist_backend, init_method=args.dist_url,
                                 world_size=args.world_size, rank=args.rank)
     # create model
-    if args.pretrained:
-        print("=> using pre-trained model '{}'".format(args.arch))
-        model = models.__dict__[args.arch](pretrained=True)
+    if args.arch == "baseline":
+        backbone = BaseBackbone(3)
     else:
-        print("=> creating model '{}'".format(args.arch))
-        model = models.__dict__[args.arch]()
+        backbone = VOneNetBackbone(model_arch=args.arch)
+
+    model = AutoEncoder(in_channels=3, backbone=backbone,
+                        backbone_out=backbone_outs[args.arch])
+    if args.summary:
+        summary(model, input_size=(3, 224, 224))
+        exit()
 
     if args.distributed:
         # For multiprocessing distributed, DistributedDataParallel constructor
@@ -234,16 +248,35 @@ def main_worker(gpu, ngpus_per_node, args):
         validate(val_loader, model, criterion, args)
         return
 
+    # tensorboard support
+    if not os.path.exists('experiments'):
+        os.mkdir('experiments')
+    if not os.path.exists(f'experiments/{args.experiment}'):
+        os.mkdir(f'experiments/{args.experiment}')
+    if not os.path.exists(f'experiments/{args.experiment}/logs'):
+        os.mkdir(f'experiments/{args.experiment}/logs')
+
+    writer = SummaryWriter(f'experiments/{args.experiment}/logs')
+
     for epoch in range(args.start_epoch, args.epochs):
         if args.distributed:
             train_sampler.set_epoch(epoch)
         adjust_learning_rate(optimizer, epoch, args)
 
         # train for one epoch
-        train(train_loader, model, criterion, optimizer, epoch, args)
+        train_mse = train(train_loader, model, criterion,
+                          optimizer, epoch, args)
 
         # evaluate on validation set
         mse = validate(val_loader, model, criterion, args)
+
+        writer.add_scalars(
+            'MSE_LOSS', {
+                'Train': train_mse,
+                'Val': mse
+            },
+            epoch
+        )
 
         # remember best mse and save checkpoint
         is_best = mse > best_mse
@@ -298,6 +331,8 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 
         if i % args.print_freq == 0:
             progress.display(i)
+
+    return losses.avg
 
 
 def validate(val_loader, model, criterion, args):
