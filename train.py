@@ -147,6 +147,8 @@ def main_worker(gpu, ngpus_per_node, args):
 
     model = AutoEncoder(in_channels=3, backbone=backbone,
                         backbone_out=backbone_outs[args.arch])
+
+    model.cuda(args.gpu)
     if args.summary:
         summary(model, input_size=(3, 224, 224))
         exit()
