@@ -338,7 +338,7 @@ def train(train_loader, model, criterion, optimizer, epoch, args):
 
 def validate(val_loader, model, criterion, args):
     batch_time = AverageMeter('Time', ':6.3f')
-    losses = AverageMeter('Loss', ':.4e')
+    losses = AverageMeter('Loss', ':.2e')
     progress = ProgressMeter(
         len(val_loader),
         [batch_time, losses],
