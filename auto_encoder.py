@@ -13,6 +13,7 @@ class AutoEncoder(nn.Module):
         latent_dim: Union[int, None] = None,
         decoder_channels: List = [512, 256, 128, 64, 3],
         decoder_strategy: str = 'upsampling',
+        is_cornets: bool = False,
         **kwargs
     ):
         """Constructor
@@ -34,7 +35,8 @@ class AutoEncoder(nn.Module):
         self.decoder = Decoder(
             in_channels=backbone_out if latent_dim is None else latent_dim,
             channels=decoder_channels,
-            strategy=decoder_strategy
+            strategy=decoder_strategy,
+            is_cornets=is_cornets
         )
 
     def forward(self, x):
@@ -90,7 +92,8 @@ class Decoder(nn.Module):
         self,
         in_channels: int,
         channels: List = [512, 256, 128, 64, 3],
-        strategy: str = 'upsampling'
+        strategy: str = 'upsampling',
+        is_cornets: bool = False
     ):
         """Constructor
 
@@ -98,6 +101,7 @@ class Decoder(nn.Module):
             in_channels (int): input channels
             channels (List, optional): List of int values representing the channels for each of the 5 decoder's blocks. Defaults to [512, 256, 128, 64, 3].
             strategy (str, optional): Strategy to upsample the feature maps through the decoder's blocks. Values available: 'upsampling' or 'transpose_conv'. Defaults to 'upsampling'.
+            is_cornets (bool, optional): flag that indicates whether the encoder's backbone is a CoRNet-S architecture. This is basically a dirty trick
         """
         super(Decoder, self).__init__()
 
@@ -150,8 +154,12 @@ class Decoder(nn.Module):
             blocks[4] = ConvBNAct(
                 channels_in=channels[3], channels_out=channels[4], kernel_size=2, is_transposed=True, stride=2)
 
+        self.is_cornets = True
+
         self.decoder = nn.Sequential(*blocks)
 
     def forward(self, x):
         x = self.decoder(x)
+        if self.is_cornets:
+            x = F.interpolate(x, scale_factor=0.5)
         return x

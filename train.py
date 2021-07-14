@@ -147,7 +147,7 @@ def main_worker(gpu, ngpus_per_node, args):
         backbone = VOneNetBackbone(model_arch=args.arch)
 
     model = AutoEncoder(in_channels=3, backbone=backbone,
-                        backbone_out=backbone_outs[args.arch])
+                        backbone_out=backbone_outs[args.arch], is_cornets=args.arch == 'cornets')
 
     model.cuda(args.gpu)
     if args.summary:
